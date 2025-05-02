@@ -26,6 +26,7 @@ A **Flask-based chatbot** powered by **RAG (Retrieval-Augmented Generation)** fo
 - 🐍 Python `3.8+`
 - 🐇 RabbitMQ
 - 💻 macOS/Linux (tested on macOS)
+- Get an api from https://cohere.com/
 
 ---
 
@@ -52,34 +53,28 @@ Sign up at 👉 https://dashboard.cohere.ai/, grab your free API key.
 In app.py, replace:
 
 ```
-Edit
+
 co = cohere.Client("your-cohere-api-key")
 with your actual API key.
-
+```
 🗝️ Set Secret Key:
-bash
-Copy
-Edit
+```
 python3 -c "import secrets; print(secrets.token_urlsafe(32))"
 Replace the secret key in app.py:
-
-python
-Copy
-Edit
+```
+```
 app.secret_key = "your-new-generated-key"
 🐇 Start RabbitMQ:
-bash
-Copy
-Edit
+```
 rabbitmq-server
 🚀 Run the App:
-bash
-Copy
-Edit
+```
 export TOKENIZERS_PARALLELISM=false
 python3 app.py
 Then open:
 👉 http://127.0.0.1:5000/
+```
+
 
 🕹️ Usage
 💬 Chat: Enter customer queries like “How do I track my order?”.
@@ -116,11 +111,8 @@ Double-check your API key at 👉 https://dashboard.cohere.ai/
 
 Ensure it's running:
 
-bash
-Copy
-Edit
+```
 rabbitmqctl status
-📜 License
-MIT License © 2025 👾✨
+```
 
 🎉 Done!

@@ -26,7 +26,7 @@ A **Flask-based chatbot** powered by **RAG (Retrieval-Augmented Generation)** fo
 - 🐍 Python `3.8+`
 - 🐇 RabbitMQ
 - 💻 macOS/Linux (tested on macOS)
-- Get an api from https://cohere.com/
+- Get an api key from https://cohere.com/
 
 ---
 

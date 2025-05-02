@@ -1,0 +1,14 @@
+Q: How do I track my order?
+A: Visit our tracking page at example.com/track with your order ID.
+
+Q: What is your return policy?
+A: Returns are accepted within 30 days with a receipt.
+
+Q: How do I contact support?
+A: Email us at support@example.com or call 1-800-555-1234.
+
+Q: Whom do I email for support?
+A: Email us at support@example.com.
+
+Q: Whom do I call for support?
+A: Call 1-800-555-1234.

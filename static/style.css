@@ -1,0 +1,184 @@
+/* Import a modern font */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Montserrat:wght@400;600&display=swap');
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 100%);
+    color: #ffffff;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Sparkling background animation */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    pointer-events: none;
+    z-index: -1;
+    animation: sparkle 10s infinite;
+}
+
+@keyframes sparkle {
+    0%, 100% { background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.3)"/></svg>') repeat; }
+    50% { background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.6)"/></svg>') repeat; }
+}
+
+.container {
+    display: flex;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.sidebar {
+    width: 250px;
+    background: rgba(20, 20, 30, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+}
+
+.sidebar h2 {
+    margin-top: 0;
+    font-family: 'Orbitron', sans-serif;
+    color: #00ffff;
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    margin: 10px 0;
+    color: #e0e0e0;
+    font-size: 14px;
+}
+
+.main {
+    flex-grow: 1;
+    padding: 20px;
+    background: rgba(10, 10, 20, 0.9);
+    border-radius: 10px;
+    margin-left: 20px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+}
+
+h1 {
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    color: #ff00ff;
+    text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+}
+
+.chat-container {
+    background: rgba(30, 30, 40, 0.95);
+    border: 2px solid #00ffff;
+    border-radius: 10px;
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+.chat-message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    background: rgba(50, 50, 60, 0.8);
+    word-wrap: break-word;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #ffffff;
+    border: 1px solid #ff00ff;
+    box-shadow: 0 0 5px rgba(255, 0, 255, 0.3);
+}
+
+.debug {
+    margin-top: 20px;
+    padding: 10px;
+    background: rgba(20, 20, 30, 0.8);
+    border: 1px solid #00ffff;
+    border-radius: 5px;
+    color: #e0e0e0;
+}
+
+.debug h3 {
+    margin-top: 0;
+    color: #00ffff;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.debug pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color: #e0e0e0;
+}
+
+form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+input[type="text"], select {
+    padding: 10px;
+    border: 2px solid #00ffff;
+    border-radius: 5px;
+    background: rgba(20, 20, 30, 0.8);
+    color: #ffffff;
+    flex-grow: 1;
+    font-family: 'Montserrat', sans-serif;
+}
+
+input[type="text"]::placeholder {
+    color: #a0a0a0;
+}
+
+button {
+    padding: 10px 20px;
+    background: linear-gradient(45deg, #ff00ff, #00ffff);
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+button:hover {
+    background: linear-gradient(45deg, #00ffff, #ff00ff);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+input[type="file"] {
+    padding: 10px;
+    color: #ffffff;
+}
+
+/* Scrollbar styling */
+.chat-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-container::-webkit-scrollbar-track {
+    background: rgba(20, 20, 30, 0.8);
+}
+
+.chat-container::-webkit-scrollbar-thumb {
+    background: #00ffff;
+    border-radius: 4px;
+}
+
+.chat-container::-webkit-scrollbar-thumb:hover {
+    background: #ff00ff;
+}

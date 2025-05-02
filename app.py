@@ -20,7 +20,7 @@ app = Flask(__name__)
 app.secret_key = "a7b9c2d8e4f6g1h3i5j0k2l4m6n8o0p"  # Change this!
 
 # Cohere Client (Free Tier)
-co = cohere.Client(" <Insert your api>  ")  # Replace with your Cohere API key
+co = cohere.Client(" <Insert your apikey>  ")  # Replace with your Cohere API key
 
 # Translator
 translator = GoogleTranslator(source='auto', target='es')

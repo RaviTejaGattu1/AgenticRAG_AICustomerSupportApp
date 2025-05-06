@@ -10,6 +10,9 @@ import pika
 import os
 from datetime import datetime
 import logging
+from PIL import Image
+import pytesseract
+import uuid
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -17,13 +20,13 @@ logger = logging.getLogger(__name__)
 
 # Flask App
 app = Flask(__name__)
-app.secret_key = "a7b9c2d8e4f6g1h3i5j0k2l4m6n8o0p"  # Change this!
+app.secret_key = "X7yZ9pQ2wE4rT6uI8oP0aS2dF4gH6jK"  # Replace with your generated key
 
 # Cohere Client (Free Tier)
-co = cohere.Client(" <Insert your apikey>  ")  # Replace with your Cohere API key
+co = cohere.Client("<>")  # Replace with your Cohere API key
 
 # Translator
-translator = GoogleTranslator(source='auto', target='es')
+translator = GoogleTranslator(source='auto', target='en')
 
 # RabbitMQ Setup
 rabbitmq_connection = None
@@ -37,16 +40,35 @@ except pika.exceptions.AMQPConnectionError as e:
     logger.error(f"Failed to connect to RabbitMQ: {e}")
     logger.info("Continuing without RabbitMQ; escalations will be logged to tickets.json only")
 
+# Create uploads directory
+UPLOAD_FOLDER = 'static/uploads'
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5MB limit
+
 # FAQ Loader
 def load_faq(file_path):
-    with open(file_path, "r") as f:
-        content = f.read().strip().split("\n\n")
-    return [Document(page_content=entry) for entry in content if "Q:" in entry and "A:" in entry]
+    try:
+        with open(file_path, "r", encoding='utf-8') as f:
+            content = f.read().strip().split("\n\n")
+        documents = [Document(page_content=entry) for entry in content if "Q:" in entry and "A:" in entry]
+        logger.info(f"Loaded {len(documents)} FAQ entries")
+        return documents
+    except Exception as e:
+        logger.error(f"Error loading FAQ: {e}")
+        return []
 
 # Initialize FAQ Store
 faq_documents = load_faq("faq.txt")
 embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-vector_store = FAISS.from_documents(faq_documents, embeddings)
+vector_store = None
+if faq_documents:
+    try:
+        vector_store = FAISS.from_documents(faq_documents, embeddings)
+        logger.info("FAISS vector store initialized")
+    except Exception as e:
+        logger.error(f"Error initializing FAISS: {e}")
 
 # Analytics Store
 def load_analytics():
@@ -54,11 +76,34 @@ def load_analytics():
         with open("query_counts.json", "r") as f:
             return json.load(f)
     except:
-        return {}
+        return {"Order Tracking": 0, "Returns": 0, "Support Contact": 0, "Other": 0}
 
 def save_analytics(counts):
     with open("query_counts.json", "w") as f:
         json.dump(counts, f, indent=2)
+
+# Categorize Query
+def categorize_query(query):
+    query = query.lower()
+    if any(word in query for word in ["track", "order", "delivery"]):
+        return "Order Tracking"
+    elif any(word in query for word in ["return", "refund", "exchange"]):
+        return "Returns"
+    elif any(word in query for word in ["contact", "support", "email", "call"]):
+        return "Support Contact"
+    else:
+        return "Other"
+
+# Image to Text
+def image_to_text(image_file):
+    try:
+        img = Image.open(image_file)
+        text = pytesseract.image_to_string(img).strip()
+        logger.info(f"Extracted text from image: {text[:100]}...")
+        return text if text else "No text found in image."
+    except Exception as e:
+        logger.error(f"Error extracting text from image: {e}")
+        return "Error extracting text from image."
 
 # State for LangGraph
 class State(dict):
@@ -73,10 +118,16 @@ def greet(state):
     return state
 
 def retrieve(state):
+    if not vector_store:
+        logger.error("Vector store not initialized")
+        state["retrieved"] = "No info found."
+        return state
     try:
-        docs = vector_store.similarity_search_with_score(state["query"], k=1)
+        query = state["query"].lower().strip()
+        docs = vector_store.similarity_search_with_score(query, k=1)
         doc, distance = docs[0] if docs else (None, float('inf'))
-        if doc and distance < 1.0:
+        logger.info(f"Retrieved doc: {doc.page_content if doc else 'None'}, distance: {distance}")
+        if doc and distance < 1.5:  # Relaxed threshold
             state["retrieved"] = doc.page_content.split("A:")[1].strip()
         else:
             state["retrieved"] = "No info found."
@@ -87,8 +138,8 @@ def retrieve(state):
 
 def respond(state):
     counts = load_analytics()
-    query_key = state["query"].lower()
-    counts[query_key] = counts.get(query_key, 0) + 1
+    theme = categorize_query(state["query"])
+    counts[theme] = counts.get(theme, 0) + 1
     save_analytics(counts)
 
     if "urgent" in state["query"].lower():
@@ -109,7 +160,7 @@ def respond(state):
                 state["response"] = translator.translate(state["response"])
         except Exception as e:
             logger.error(f"Error in Cohere call: {e}")
-            state["response"] = "Error processing your request. Please try again."
+            state["response"] = state["retrieved"]  # Fallback to retrieved text
             state["escalate"] = True
     else:
         state["response"] = "I don’t have that information."
@@ -167,20 +218,41 @@ def home():
                     file.save("faq.txt")
                     global vector_store, faq_documents
                     faq_documents = load_faq("faq.txt")
-                    vector_store = FAISS.from_documents(faq_documents, embeddings)
+                    if faq_documents:
+                        vector_store = FAISS.from_documents(faq_documents, embeddings)
+                        logger.info("FAISS vector store reinitialized")
+                    else:
+                        logger.error("No valid FAQ entries loaded")
                     session["chat_history"].append("<b>Agent:</b> FAQ updated successfully!")
                     logger.info("FAQ updated successfully")
-            # Handle query and language
+            # Handle query, image, and language
             else:
                 query = request.form.get("query", "").strip()
                 language = request.form.get("language", session["language"])
+                image_query = None
+                image_path = None
+                if "image_query" in request.files:
+                    image_file = request.files["image_query"]
+                    if image_file and image_file.filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+                        # Generate unique filename
+                        filename = f"{uuid.uuid4().hex}{os.path.splitext(image_file.filename)[1]}"
+                        image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                        image_file.save(image_path)
+                        logger.info(f"Image saved to {image_path}")
+                        image_query = image_to_text(image_path)
+                        # Add image to chat history
+                        session["chat_history"].append(
+                            f'<b>You:</b> <img src="/{image_path}" alt="User Image" style="max-width: 200px;">'
+                        )
+                        logger.info(f"Image query processed: {image_query}")
                 if language:
                     session["language"] = language
                     logger.info(f"Language set to: {session['language']}")
-                if query:
-                    logger.info(f"Processing query: {query}")
+                final_query = image_query if image_query else query
+                if final_query:
+                    logger.info(f"Processing query: {final_query}")
                     state = {
-                        "query": query,
+                        "query": final_query,
                         "retrieved": "",
                         "response": "",
                         "escalate": False,
@@ -188,23 +260,24 @@ def home():
                     }
                     try:
                         result = graph_app.invoke(state)
-                        session["chat_history"].append(f"<b>You:</b> {query}")
+                        if not image_query and query:
+                            session["chat_history"].append(f"<b>You:</b> {query}")
                         session["chat_history"].append(f"<b>Agent:</b> {result['response']}")
                         logger.info(f"Chat history updated: {session['chat_history'][-2:]}")
                     except Exception as e:
                         logger.error(f"Error processing query: {e}")
-                        session["chat_history"].append(f"<b>You:</b> {query}")
+                        session["chat_history"].append(f"<b>You:</b> {final_query}")
                         session["chat_history"].append("<b>Agent:</b> Sorry, an error occurred. Please try again.")
                         logger.info(f"Chat history updated with error message: {session['chat_history'][-2:]}")
                 else:
-                    logger.warning("No valid query provided in form data")
+                    logger.warning("No valid query or image provided in form data")
             session.modified = True
         except Exception as e:
             logger.error(f"Error in POST route: {e}")
             session["chat_history"].append("<b>Agent:</b> An error occurred while processing your request.")
             session.modified = True
     logger.info(f"Rendering with chat_history: {session['chat_history']}")
-    return render_template("index.html", chat_history=session["chat_history"], counts=counts, language=session["language"])
+    return render_template("index.html", chat_history=session['chat_history'], counts=counts, language=session["language"])
 
 @app.route("/analytics", methods=["GET"])
 def analytics():

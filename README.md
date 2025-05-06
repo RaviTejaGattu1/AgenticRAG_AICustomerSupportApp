@@ -1,4 +1,4 @@
-# 🤖✨ AI Customer Support Agent - An Agentic RAG Application 🚀🌌
+# 🤖✨ AI Customer Support Agent - An Agentic Multimodal RAG Application 🚀🌌
 
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)
 ![RabbitMQ](https://img.shields.io/badge/RabbitMQ-🐇-orange)

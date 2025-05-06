@@ -1,6 +1,6 @@
 # 🤖✨ AI Customer Support Agent - An Agentic Multimodal RAG Application 🚀🌌
 
-A **Flask-based chatbot** powered by **RAG (Retrieval-Augmented Generation)** for customer support, featuring **multimodal inputs (text, image, speech)** 🎤🖼️, **multilingual magic** 🌍, **dynamic FAQ uploads** 📄, **query analytics** 📊, and **ticket escalation** 🚨 via **RabbitMQ** 🐇. The UI rocks a sleek, cosmic dark theme with sparkling animations 🌠.
+A **Flask-based chatbot** powered by **RAG (Retrieval-Augmented Generation)** for customer support, featuring **multimodal inputs (text, image, speech)** 🅰️ 🎤 🖼️ , **multilingual magic** 🌍, **dynamic FAQ uploads** 📄, **query analytics** 📊, and **ticket escalation** 🚨 via **RabbitMQ** 🐇. The UI rocks a sleek, cosmic dark theme with sparkling animations 🌠.
 
 ---
 

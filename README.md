@@ -7,6 +7,7 @@ A **Flask-based chatbot** powered by **RAG (Retrieval-Augmented Generation)** fo
 ## 🌟 Features
 
 - 💬 **RAG Chatbot:** Answers queries using FAISS + Cohere’s free API.
+- 🔊 **Text-to-Speech (TTS):** Speaks responses when speech mode is enabled.
 - 🖼️ **Image-to-Text:** Upload images (PNG/JPEG) to extract text with pytesseract and display them in chat.
 - 🎤 **Speech Input:** Ask questions via speech recognition (English, Spanish, French).
 - 🌍 **Multilingual:** Supports English, Spanish, and French with Google Translator.
@@ -14,7 +15,6 @@ A **Flask-based chatbot** powered by **RAG (Retrieval-Augmented Generation)** fo
 - 📊 **Analytics Sidebar:** Tracks query frequency live with theme cards (Order Tracking, Returns, Support Contact, Other).
 - 🚨 **Escalation System:** Routes complex queries to RabbitMQ and logs them in `tickets.json`.
 - 🎨 **Cosmic UI:** Dark gradient background, neon chat bubbles, sparkly animations, and clear input labels ✨.
-- 🔊 **Text-to-Speech (TTS):** Speaks responses when speech mode is enabled.
 
 ---
 

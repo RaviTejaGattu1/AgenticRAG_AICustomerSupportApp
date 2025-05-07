@@ -4,6 +4,12 @@ A **Flask-based chatbot** powered by **RAG (Retrieval-Augmented Generation)** fo
 
 ---
 
+## 🌟 Demo Video Link :
+https://drive.google.com/file/d/11sBW-
+u0XXArfYTVrJadwa-Ock5k261JB/view?usp=sharing 
+
+---
+
 ## 🌟 Features
 
 - 💬 **RAG Chatbot:** Answers queries using FAISS + Cohere’s free API.

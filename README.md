@@ -5,8 +5,9 @@ A **Flask-based chatbot** powered by **RAG (Retrieval-Augmented Generation)** fo
 ---
 
 ## 🌟 Demo Video Link :
-https://drive.google.com/file/d/11sBW-
-u0XXArfYTVrJadwa-Ock5k261JB/view?usp=sharing 
+
+[Link](https://drive.google.com/file/d/11sBW-
+u0XXArfYTVrJadwa-Ock5k261JB/view?usp=sharing)
 
 ---
 
